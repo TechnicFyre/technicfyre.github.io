@@ -104,7 +104,13 @@ export default function Game() {
         </li>
       );
     } else if (move > 0) {
-      description = 'Go to move #' + move;
+      let coordinate = [0,0];
+      for (let i = 0; i < squares.length; i++) {
+        if (squares[i] != history[move - 1][i]) {
+          coordinate = [Math.floor(i / 3) + 1, i % 3 + 1];
+        }
+      }
+      description = 'Go to move #' + move + " (" + coordinate[0] + ", " + coordinate[1] + ")";
     } else {
       description = 'Go to game start';
     }
