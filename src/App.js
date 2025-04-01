@@ -1,9 +1,9 @@
 import { useState } from 'react';
 
-function Square({ value, onSquareClick }) {
+function Square({ value, onSquareClick, highlight }) {
   return (
     <button 
-      className="square"
+      className={highlight ? "square highlighted" : "square"}
       onClick={onSquareClick}
     >
       {value}
@@ -25,19 +25,26 @@ function Board({ xIsNext, squares, onPlay }) {
     onPlay(nextSquares);
   }
 
-  const winner = calculateWinner(squares);
+  const winningSquares = calculateWinner(squares);
+  const winner = winningSquares ? squares[winningSquares[0]] : winningSquares;
   let status;
   if (winner) {
     status = "Winner: " + winner;
-  } else {
+  } else if (squares.includes(null)) {
     status = "Next player: " + (xIsNext ? "X" : "O");
+  } else {
+    status = "It's a draw!"
   }
 
   let board = [];
   for (let rowInit = 1; rowInit <= 3; rowInit++) {
     let nextRow = [];
     for (let squareInit = (rowInit - 1) * 3; squareInit < rowInit * 3; squareInit++) {
-      nextRow = [...nextRow, <Square value={squares[squareInit]} onSquareClick={() => handleClick(squareInit)}/>];
+      let highlight = false;
+      if (winningSquares) {
+        if (winningSquares.includes(squareInit)) highlight = true;
+      }
+      nextRow = [...nextRow, <Square value={squares[squareInit]} onSquareClick={() => handleClick(squareInit)} highlight={highlight}/>];
     }
     board = [...board, <div className="board-row">{nextRow}</div>];
   }
@@ -138,7 +145,7 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[b] === squares[c]) {
-      return squares[a];
+      return lines[i];
     }
   }
   return null;
