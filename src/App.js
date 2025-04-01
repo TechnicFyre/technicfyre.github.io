@@ -50,9 +50,30 @@ function Board({ xIsNext, squares, onPlay }) {
   );
 }
 
+function MovesList({ moves, sortToggle, onToggle }) {
+  let button = <button onClick={() => onToggle()} >{sortToggle ? "Ascending" : "Descending"}</button>;
+  if (sortToggle) {
+    return (
+        <ol start="0">
+          {button}
+          {moves}
+        </ol>
+    );
+  }
+  else {
+    return (
+      <ol start={moves.length - 1} reversed>
+        {button}
+        {moves.toReversed()}
+      </ol>
+    );
+  }
+}
+
 export default function Game() {
   const [history, setHistory] = useState([Array(9).fill(null)]);
   const [currentMove, setCurrentMove] = useState(0);
+  const [sortToggle, setSortToggle] = useState(true);
   const xIsNext = currentMove % 2 === 0;
   const currentSquares = history[currentMove];
 
@@ -87,13 +108,17 @@ export default function Game() {
     );
   });
 
+  function handleToggle() {
+    setSortToggle(!sortToggle);
+  }
+
   return (
     <div className="game">
       <div className="game-board">
         <Board xIsNext={xIsNext} squares={currentSquares} onPlay={handlePlay} />
       </div>
       <div classname="game-info">
-        <ol>{moves}</ol>
+        <MovesList moves={moves} sortToggle={sortToggle} onToggle={handleToggle} />
       </div>
     </div>
   );
